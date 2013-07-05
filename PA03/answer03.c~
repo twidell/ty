@@ -80,7 +80,6 @@ struct Image* loadImage(const char* filename)
  
   struct Image *imageData;
   int check;
-  int check2;
 
   fopen(filename, "rb");
   if(fopen(filename, "rb") == NULL)
@@ -111,67 +110,41 @@ struct Image* loadImage(const char* filename)
 	  return NULL;
 	}
 
-      //load data
 	  imageData = malloc(sizeof(struct Image));
 	  imageData->comment = malloc(sizeof(char) * header.comment_len);
 	  if(imageData->comment == NULL)
 	    {
 	      fclose(fp);
 	      free(imageData);
-	      printf("Comment malloc failed\n\n");
 	      return NULL;
 	    }
-	  imageData->data = malloc(sizeof(uint8_t)* header.width * header.height);
-	  if(imageData->data == NULL)
+	  imageData->data = malloc(sizeof(int)* header.width * header.height);
+	  if(imageData == NULL)
 	    {
 	      fclose(fp);
 	      free(imageData->comment);
 	      free(imageData);
-	      printf("Data for height/width malloc failed\n\n");
 	      return NULL;
 	    }
 
-	  check2 = fread(imageData->comment, sizeof(char) * header.comment_len, 1, fp);
+	  fread(imageData->comment, sizeof(char) * header.comment_len, 1, fp);
 	  check = fread(imageData->data, sizeof(uint8_t) * header.width * header.height, 1, fp);
-	  if(check != 1 || check2 !=1)
-	    {
-	      fclose(fp);
-	      free(imageData->data);
-	      free(imageData->comment);
-	      free(imageData);
-	      printf("Missing data from eof, can't be read\n");
-	      return NULL;
-	    }
-	  if(imageData->comment[header.comment_len-1] !='\0')
+
+	  if(check == 0)
 	    {
 	      fclose(fp);
 	      free(imageData->comment);
-	      free(imageData->data);
 	      free(imageData);
-	      printf("NULL terminator needed\n\n");
 	      return NULL;
 	    }
 
-	  if(fread(imageData->data, 1, 1, fp))
-	    {
-	      fclose(fp);
-	      free(imageData->comment);
-	      free(imageData->data);
-	      free(imageData);
-	      printf("Image heigth wrong\n\n");
-	      return NULL;
-	    }
-
-	   fclose(fp);
+	  fclose(fp);
 
 	  imageData->height = header.height;
 	  imageData->width = header.width;
     }
 	  
-  // fclose(fp);
 
-  // imageData->height = header.height;
-  // imageData->width = header.width;
 
     return imageData;
 }
@@ -191,8 +164,9 @@ void freeImage(struct Image* image)
     {
       return;
     }
-  free(image->data);
+
   free(image->comment);
+  free(image->data);
   free(image);
 
 }
@@ -242,24 +216,23 @@ struct Point convolutionMax(const struct Image* image1,
     struct Point peak;
     peak.x = 0;
     peak.y = 0;
-    int row;
-    int col;
+    int i;
+    int j;
     int con = 0;
     int maxCon = 0;
 
-    for(row = 0; row < image1 -> height - image2 -> height; row++)
+    for(i = 0; i < image1 -> height; i++)
       {
-	for(col = 0; col < image1 -> width - image2 -> width; col++)	  
+	for(j = 0; j < image1 -> width; j++)
 	  {
-	    con = convolute(col, row, image1, image2);
-
+	    con = convolute(i, j, image1, image2);
+	  }
 	if(maxCon < con)
 	  {
 	    maxCon = con;
-	    peak.x = col;
-	    peak.y = row;
+	    peak.x = i;
+	    peak.y = j;
 	  }
-      }
       }
 
     
@@ -269,15 +242,22 @@ struct Point convolutionMax(const struct Image* image1,
 
 int convolute(int x, int y, const struct Image*image1, const struct Image*image2)
 {
-  int row = 0;//rows for image2
-  int col = 0;//columns for image2
-  int con = 0;//find greatest convoluted point
+  int i;
+  int j;
+  int x1;
+  int y1;
+  int con = 0;
 
-  for(row = 0; row < image2 -> height; row++)
+  for(i = 0; i < image2 -> height; i++)
     {
-      for(col = 0; col < image2 -> width; col++)
+      for(j = 0; j < image2 -> width; j++)
 	{
-	  con += image1->data[(row + x) + ((col + y) *(image1->width))] * (image2->data[row + col * image2->width]);
+	  x1 = x + j;
+	  y1 = y + i;
+	  if(!(x1 < 0 || x1 >= image1->width || y1 < 0 || y1 >= image1->height))
+	    {
+	      con += (image2 ->data[j + i*image2->width]) * (image1->data[(x1) + ((y1)*image1->width)]);
+	    }
 	}
     }
 

@@ -1,107 +1,76 @@
-==19769== Memcheck, a memory error detector
-==19769== Copyright (C) 2002-2012, and GNU GPL'd, by Julian Seward et al.
-==19769== Using Valgrind-3.8.1 and LibVEX; rerun with -h for copyright info
-==19769== Command: ./pa03 images/typing-practice.ee264 images/corrupt-testcases/big-width-height.ee264 outputs/corrupt.ppm
-==19769== Parent PID: 19764
-==19769== 
---19769-- 
---19769-- Valgrind options:
---19769--    --tool=memcheck
---19769--    --leak-check=full
---19769--    --verbose
---19769--    --log-file=outputs/memoutput
---19769-- Contents of /proc/version:
---19769--   Linux version 2.6.32-358.6.2.el6.x86_64 (mockbuild@x86-022.build.eng.bos.redhat.com) (gcc version 4.4.7 20120313 (Red Hat 4.4.7-3) (GCC) ) #1 SMP Tue May 14 15:48:21 EDT 2013
---19769-- Arch and hwcaps: AMD64, amd64-sse3-cx16
---19769-- Page sizes: currently 4096, max supported 4096
---19769-- Valgrind library directory: /usr/lib64/valgrind
---19769-- Reading syms from /home/shay/b/twidell/ECE264Assignments/Summer2013/PA03/pa03
---19769-- Reading syms from /usr/lib64/valgrind/memcheck-amd64-linux
---19769--    object doesn't have a dynamic symbol table
---19769-- Reading syms from /lib64/ld-2.12.so
---19769-- Scheduler: using generic scheduler lock implementation.
---19769-- Reading suppressions file: /usr/lib64/valgrind/default.supp
-==19769== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-19769-by-twidell-on-ecelinux08.ecn.purdue.edu
-==19769== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-19769-by-twidell-on-ecelinux08.ecn.purdue.edu
-==19769== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-19769-by-twidell-on-ecelinux08.ecn.purdue.edu
-==19769== 
-==19769== TO CONTROL THIS PROCESS USING vgdb (which you probably
-==19769== don't want to do, unless you know exactly what you're doing,
-==19769== or are doing some strange experiment):
-==19769==   /usr/lib64/valgrind/../../bin/vgdb --pid=19769 ...command...
-==19769== 
-==19769== TO DEBUG THIS PROCESS USING GDB: start GDB like this
-==19769==   /path/to/gdb ./pa03
-==19769== and then give GDB the following command
-==19769==   target remote | /usr/lib64/valgrind/../../bin/vgdb --pid=19769
-==19769== --pid is optional if only one valgrind process is running
-==19769== 
---19769-- REDIR: 0x3395a174a0 (strlen) redirected to 0x38049551 (vgPlain_amd64_linux_REDIR_FOR_strlen)
---19769-- Reading syms from /usr/lib64/valgrind/vgpreload_core-amd64-linux.so
---19769-- Reading syms from /usr/lib64/valgrind/vgpreload_memcheck-amd64-linux.so
---19769-- REDIR: 0x3395a17310 (index) redirected to 0x4a07bf0 (index)
---19769-- REDIR: 0x3395a17390 (strcmp) redirected to 0x4a08530 (strcmp)
---19769-- Reading syms from /lib64/libc-2.12.so
---19769-- REDIR: 0x3395e84e80 (strcasecmp) redirected to 0x480155c (_vgnU_ifunc_wrapper)
---19769-- REDIR: 0x3395e87140 (strncasecmp) redirected to 0x480155c (_vgnU_ifunc_wrapper)
---19769-- REDIR: 0x3395e82df0 (__GI_strrchr) redirected to 0x4a07a70 (__GI_strrchr)
---19769-- REDIR: 0x3395e7a8a0 (malloc) redirected to 0x4a0696c (malloc)
---19769-- REDIR: 0x3395e89820 (memcpy) redirected to 0x4a08b20 (memcpy)
---19769-- REDIR: 0x3395e81310 (__GI_strlen) redirected to 0x4a07f70 (__GI_strlen)
---19769-- REDIR: 0x3395e7b6d0 (free) redirected to 0x4a06369 (free)
-==19769== Warning: silly arg (-571956983561715312) to malloc()
---19769-- REDIR: 0x3395e846b0 (mempcpy) redirected to 0x4a09f80 (mempcpy)
-==19769== Invalid write of size 1
-==19769==    at 0x4A0A058: mempcpy (mc_replace_strmem.c:1267)
-==19769==    by 0x3395E718ED: _IO_file_xsgetn (in /lib64/libc-2.12.so)
-==19769==    by 0x3395E676E1: fread (in /lib64/libc-2.12.so)
-==19769==    by 0x4008F0: loadImage (answer03.c:131)
-==19769==    by 0x400EF8: main (pa03.c:92)
-==19769==  Address 0x0 is not stack'd, malloc'd or (recently) free'd
-==19769== 
-==19769== 
-==19769== Process terminating with default action of signal 11 (SIGSEGV)
-==19769==  Access not within mapped region at address 0x0
-==19769==    at 0x4A0A058: mempcpy (mc_replace_strmem.c:1267)
-==19769==    by 0x3395E718ED: _IO_file_xsgetn (in /lib64/libc-2.12.so)
-==19769==    by 0x3395E676E1: fread (in /lib64/libc-2.12.so)
-==19769==    by 0x4008F0: loadImage (answer03.c:131)
-==19769==    by 0x400EF8: main (pa03.c:92)
-==19769==  If you believe this happened as a result of a stack
-==19769==  overflow in your program's main thread (unlikely but
-==19769==  possible), you can try to increase the size of the
-==19769==  main thread stack using the --main-stacksize= flag.
-==19769==  The main thread stack size used in this run was 10485760.
-==19769== 
-==19769== HEAP SUMMARY:
-==19769==     in use at exit: 117,150 bytes in 10 blocks
-==19769==   total heap usage: 11 allocs, 1 frees, 117,718 bytes allocated
-==19769== 
-==19769== Searching for pointers to 10 not-freed blocks
-==19769== Checked 1,143,144 bytes
-==19769== 
-==19769== LEAK SUMMARY:
-==19769==    definitely lost: 0 bytes in 0 blocks
-==19769==    indirectly lost: 0 bytes in 0 blocks
-==19769==      possibly lost: 0 bytes in 0 blocks
-==19769==    still reachable: 117,150 bytes in 10 blocks
-==19769==         suppressed: 0 bytes in 0 blocks
-==19769== Reachable blocks (those to which a pointer was found) are not shown.
-==19769== To see them, rerun with: --leak-check=full --show-reachable=yes
-==19769== 
-==19769== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 6 from 6)
-==19769== 
-==19769== 1 errors in context 1 of 1:
-==19769== Invalid write of size 1
-==19769==    at 0x4A0A058: mempcpy (mc_replace_strmem.c:1267)
-==19769==    by 0x3395E718ED: _IO_file_xsgetn (in /lib64/libc-2.12.so)
-==19769==    by 0x3395E676E1: fread (in /lib64/libc-2.12.so)
-==19769==    by 0x4008F0: loadImage (answer03.c:131)
-==19769==    by 0x400EF8: main (pa03.c:92)
-==19769==  Address 0x0 is not stack'd, malloc'd or (recently) free'd
-==19769== 
---19769-- 
---19769-- used_suppression:      4 U1004-ARM-_dl_relocate_object
---19769-- used_suppression:      2 glibc-2.5.x-on-SUSE-10.2-(PPC)-2a
-==19769== 
-==19769== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 6 from 6)
+==5901== Memcheck, a memory error detector
+==5901== Copyright (C) 2002-2012, and GNU GPL'd, by Julian Seward et al.
+==5901== Using Valgrind-3.8.1 and LibVEX; rerun with -h for copyright info
+==5901== Command: ./pa03 images/typing-practice.ee264 images/x.ee264 outputs/find-x.ppm
+==5901== Parent PID: 5894
+==5901== 
+--5901-- 
+--5901-- Valgrind options:
+--5901--    --tool=memcheck
+--5901--    --leak-check=full
+--5901--    --verbose
+--5901--    --log-file=outputs/memoutput
+--5901-- Contents of /proc/version:
+--5901--   Linux version 2.6.32-358.6.2.el6.x86_64 (mockbuild@x86-022.build.eng.bos.redhat.com) (gcc version 4.4.7 20120313 (Red Hat 4.4.7-3) (GCC) ) #1 SMP Tue May 14 15:48:21 EDT 2013
+--5901-- Arch and hwcaps: AMD64, amd64-sse3-cx16
+--5901-- Page sizes: currently 4096, max supported 4096
+--5901-- Valgrind library directory: /usr/lib64/valgrind
+--5901-- Reading syms from /home/shay/b/twidell/ty/PA03/pa03
+--5901-- Reading syms from /usr/lib64/valgrind/memcheck-amd64-linux
+--5901--    object doesn't have a dynamic symbol table
+--5901-- Reading syms from /lib64/ld-2.12.so
+--5901-- Scheduler: using generic scheduler lock implementation.
+--5901-- Reading suppressions file: /usr/lib64/valgrind/default.supp
+==5901== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-5901-by-twidell-on-ecelinux08.ecn.purdue.edu
+==5901== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-5901-by-twidell-on-ecelinux08.ecn.purdue.edu
+==5901== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-5901-by-twidell-on-ecelinux08.ecn.purdue.edu
+==5901== 
+==5901== TO CONTROL THIS PROCESS USING vgdb (which you probably
+==5901== don't want to do, unless you know exactly what you're doing,
+==5901== or are doing some strange experiment):
+==5901==   /usr/lib64/valgrind/../../bin/vgdb --pid=5901 ...command...
+==5901== 
+==5901== TO DEBUG THIS PROCESS USING GDB: start GDB like this
+==5901==   /path/to/gdb ./pa03
+==5901== and then give GDB the following command
+==5901==   target remote | /usr/lib64/valgrind/../../bin/vgdb --pid=5901
+==5901== --pid is optional if only one valgrind process is running
+==5901== 
+--5901-- REDIR: 0x3395a174a0 (strlen) redirected to 0x38049551 (vgPlain_amd64_linux_REDIR_FOR_strlen)
+--5901-- Reading syms from /usr/lib64/valgrind/vgpreload_core-amd64-linux.so
+--5901-- Reading syms from /usr/lib64/valgrind/vgpreload_memcheck-amd64-linux.so
+--5901-- REDIR: 0x3395a17310 (index) redirected to 0x4a07bf0 (index)
+--5901-- REDIR: 0x3395a17390 (strcmp) redirected to 0x4a08530 (strcmp)
+--5901-- Reading syms from /lib64/libc-2.12.so
+--5901-- REDIR: 0x3395e84e80 (strcasecmp) redirected to 0x480155c (_vgnU_ifunc_wrapper)
+--5901-- REDIR: 0x3395e87140 (strncasecmp) redirected to 0x480155c (_vgnU_ifunc_wrapper)
+--5901-- REDIR: 0x3395e82df0 (__GI_strrchr) redirected to 0x4a07a70 (__GI_strrchr)
+--5901-- REDIR: 0x3395e7a8a0 (malloc) redirected to 0x4a0696c (malloc)
+--5901-- REDIR: 0x3395e89820 (memcpy) redirected to 0x4a08b20 (memcpy)
+--5901-- REDIR: 0x3395e81310 (__GI_strlen) redirected to 0x4a07f70 (__GI_strlen)
+--5901-- REDIR: 0x3395e7b6d0 (free) redirected to 0x4a06369 (free)
+--5901-- REDIR: 0x3395e8aca0 (strchrnul) redirected to 0x4a09f10 (strchrnul)
+--5901-- REDIR: 0x3395e846b0 (mempcpy) redirected to 0x4a09f80 (mempcpy)
+==5901== 
+==5901== HEAP SUMMARY:
+==5901==     in use at exit: 2,272 bytes in 4 blocks
+==5901==   total heap usage: 14 allocs, 10 frees, 118,386 bytes allocated
+==5901== 
+==5901== Searching for pointers to 4 not-freed blocks
+==5901== Checked 65,288 bytes
+==5901== 
+==5901== LEAK SUMMARY:
+==5901==    definitely lost: 0 bytes in 0 blocks
+==5901==    indirectly lost: 0 bytes in 0 blocks
+==5901==      possibly lost: 0 bytes in 0 blocks
+==5901==    still reachable: 2,272 bytes in 4 blocks
+==5901==         suppressed: 0 bytes in 0 blocks
+==5901== Reachable blocks (those to which a pointer was found) are not shown.
+==5901== To see them, rerun with: --leak-check=full --show-reachable=yes
+==5901== 
+==5901== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 6 from 6)
+--5901-- 
+--5901-- used_suppression:      4 U1004-ARM-_dl_relocate_object
+--5901-- used_suppression:      2 glibc-2.5.x-on-SUSE-10.2-(PPC)-2a
+==5901== 
+==5901== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 6 from 6)
