@@ -82,17 +82,18 @@ struct Image* loadImage(const char* filename)
   int check;
   int check2;
 
+  /*Checks to see if file opens correctly*/
   fopen(filename, "rb");
   if(fopen(filename, "rb") == NULL)
     {
-      printf("Unable to read file\n");//checks read
+      // printf("Unable to read file\n");//checks read
       return NULL;
     }
   else
     {
       FILE * fp = fopen(filename, "rb");
       struct ImageHeader header;
-      size_t nread = fread(&header, sizeof(struct ImageHeader), 1, fp);
+      size_t nread = fread(&header, sizeof(struct ImageHeader), 1, fp);//Reads image header, returns 0 if NULL
 
       if(nread != 1)//checks for correct file header size, opens
 	{
@@ -100,37 +101,40 @@ struct Image* loadImage(const char* filename)
 	  fclose(fp);
 	  return NULL;
 	}
-      else
+      /* else
 	{
 	  printf("Opened header!\n");
-	}
+	  }*/
 
+      /*the following if statement returns NULL if magic bits is incorrect, width is 0, or height is 0*/
       if(header.magic_bits != ECE264_IMAGE_MAGIC_BITS || header.width <= 0 || header.height <= 0)
 	{
 	  fclose(fp);
 	  return NULL;
 	}
 
-      //load data
+      //Loads data
 	  imageData = malloc(sizeof(struct Image));
 	  imageData->comment = malloc(sizeof(char) * header.comment_len);
 	  if(imageData->comment == NULL)
 	    {
 	      fclose(fp);
 	      free(imageData);
-	      printf("Comment malloc failed\n\n");
+	      // printf("Comment malloc failed\n\n");
 	      return NULL;
 	    }
+	  //Mallocs for heigth*width test case, if 100, then passes, else return NULL
 	  imageData->data = malloc(sizeof(uint8_t)* header.width * header.height);
 	  if(imageData->data == NULL)
 	    {
 	      fclose(fp);
 	      free(imageData->comment);
 	      free(imageData);
-	      printf("Data for height/width malloc failed\n\n");
+	      // printf("Data for height/width malloc failed\n\n");
 	      return NULL;
 	    }
-
+	  //check2 checks for comment length, fp returns 1 if comment length is good
+	  //check checks for proper loading of width and heigth when reading
 	  check2 = fread(imageData->comment, sizeof(char) * header.comment_len, 1, fp);
 	  check = fread(imageData->data, sizeof(uint8_t) * header.width * header.height, 1, fp);
 	  if(check != 1 || check2 !=1)
@@ -139,26 +143,27 @@ struct Image* loadImage(const char* filename)
 	      free(imageData->data);
 	      free(imageData->comment);
 	      free(imageData);
-	      printf("Missing data from eof, can't be read\n");
+	      //printf("Missing data from eof, can't be read\n");
 	      return NULL;
 	    }
+	  //checks if NULL pointer exists
 	  if(imageData->comment[header.comment_len-1] !='\0')
 	    {
 	      fclose(fp);
 	      free(imageData->comment);
 	      free(imageData->data);
 	      free(imageData);
-	      printf("NULL terminator needed\n\n");
+	      //printf("NULL terminator needed\n\n");
 	      return NULL;
 	    }
-
+	  //Checks if image height is incorrect size
 	  if(fread(imageData->data, 1, 1, fp))
 	    {
 	      fclose(fp);
 	      free(imageData->comment);
 	      free(imageData->data);
 	      free(imageData);
-	      printf("Image heigth wrong\n\n");
+	      //printf("Image heigth wrong\n\n");
 	      return NULL;
 	    }
 
@@ -247,15 +252,16 @@ struct Point convolutionMax(const struct Image* image1,
     int con = 0;
     int maxCon = 0;
 
+    /*The first for loop scrolls across the large image with the small image, making sure at the same time that the small image does not surpass the boundaries of the large image*/
     for(row = 0; row < image1 -> height - image2 -> height; row++)
       {
 	for(col = 0; col < image1 -> width - image2 -> width; col++)	  
 	  {
 	    con = convolute(col, row, image1, image2);
 
-	if(maxCon < con)
+	if(con > maxCon)
 	  {
-	    maxCon = con;
+	    maxCon = con;//maximum convolution is stored after each loop iterates and finds larger value
 	    peak.x = col;
 	    peak.y = row;
 	  }
@@ -273,11 +279,12 @@ int convolute(int x, int y, const struct Image*image1, const struct Image*image2
   int col = 0;//columns for image2
   int con = 0;//find greatest convoluted point
 
+  /*The second for loop scrolls through your second image and convolutes the values from that image to the first, storing that convoluted value in "con" and returning "con" once image2 has scrolled through the image1*/
   for(row = 0; row < image2 -> height; row++)
     {
       for(col = 0; col < image2 -> width; col++)
 	{
-	  con += image1->data[(row + x) + ((col + y) *(image1->width))] * (image2->data[row + col * image2->width]);
+	  con += image1->data[(col + x) + ((row + y) *(image1->width))] * (image2->data[col + row * image2->width]);
 	}
     }
 
