@@ -1,7 +1,29 @@
 #include "pa04.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 
+// Don't forget to use the debugger
+// gdb ./pa04
+// r inputs/inputX outputs/outputX
+// // wait for it to crash =0
+// bt 
+SparseNode *SparseNode_check(SparseNode* node)
+{
+#define CHECK(expr, msg) if(expr) { fprintf(stderr, "%s\n", msg); assert(0); }
+
+  if(node != NULL) {
+    if(node->left)
+      CHECK((node->left->value < node->value), "Left->value not < value");
+    if(node->right)
+      CHECK((node->right->value > node->value), "Right->value not > value");
+    CHECK((node == node->right), "node->right refers back to node");
+    CHECK((node == node->left), "node->left refers back to node");
+    CHECK((node->value != 0), "node->value should never be zero");
+  }
+
+#undef CHECK
+}
 
 /* Create a single instance of a sparse array node with a specific
  * index and value. This is a constructor function that allocates
@@ -12,44 +34,19 @@
 SparseNode *SparseNode_create(int index, int value)
 {
   SparseNode * one_node = NULL;
+  one_node = malloc(sizeof(SparseNode));
+  one_node -> left = NULL;
+  one_node -> right = NULL;
+  one_node -> value = value;
+  one_node -> index = index;
+
+  // SparseNode node;
+  // SparseNode * one_node;
+  // (*one_node).left <==> one_node->left;
+  // (&node)->left <==> node.left;
+
   return one_node;
 }
-
-/* Build a sparse array from given indices and values with specific length.
- * This function takes an array of indices, an array of values, and 
- * the length as inputs.
- * It returns a sparse array. 
- * You need to insert tree nodes in order:
- * the first sparse array node contains indices[0] and values[0])
- */
-
-SparseNode *SparseArray_build(int * indicies, int * values, int length)
-{
-  SparseNode * array = NULL;
-  return array;
-}
-
-/* Destroy an entire sparse array. 
- * traversing the binary tree in postorder. Use the
- * SparseNode_destroy () function to destroy each node by itself.
- */
-void SparseArray_destroy ( SparseNode * array )
-{
- 
-/* Retrieve the smallest index in the sparse array. 
- */
-int SparseArray_getMin ( SparseNode * array )
-{
-  return 0;
-}
-
-/* Retrieve the largest index in the sparse array. 
- */
-int SparseArray_getMax ( SparseNode * array )
-{
-  return 0;
-}
-
 
 /* Add a particular value into a sparse array on a particular index.
  * The sparse array uses the index as a key in a binary search tree.
@@ -62,8 +59,34 @@ int SparseArray_getMax ( SparseNode * array )
 
 SparseNode * SparseArray_add ( SparseNode * array, int index, int value )
 {
+  if(array == NULL)
+    {
+      return SparseNode_create(index, value);
+    }
+  if(value < (array -> value))
+    {
+      array->left = SparseArray_add(array -> left, index, value);
+    }
+    else
+      {
+	array->right = SparseArray_add(array -> right, index, value);
+      }
+
   return array ;
 }
+
+ SparseNode * SparseArray_build(int * indicies, int * values, int length)
+  {
+    SparseNode * array = NULL;
+    int ct;
+
+    for(ct == 0; ct < length; ct++)
+      {
+	array = SparseArray_add(array, indicies[ct], values[ct]);
+      }
+
+    return array;
+  }
 
 /* Retrieve the node associated with a specific index in a sparse
  * array.  It returns the value
@@ -71,8 +94,76 @@ SparseNode * SparseArray_add ( SparseNode * array, int index, int value )
  * array, it returns 0. If the given index is smaller than the current
  * node, search left ; if it is larger, search right.
  */
+
+void SparseArray_destroy (SparseNode * array)
+{
+  if(array == NULL)
+    {
+      return;
+    }
+
+  SparseArray_destroy(array -> left);
+  SparseArray_destroy(array -> right);
+  free(array);
+}
+  /* Retrieve the smallest index in the sparse array. 
+ */
+
+int SparseArray_getMin ( SparseNode * array )
+{
+
+  int compVal;
+
+  if(array == NULL)
+    {
+      printf("Warning! getMin precondition not met: array NULL!\n");
+      return;
+    }
+
+  if(array -> left != NULL)
+    {
+      compVal = SparseArray_getMin(array -> left);
+    }
+
+  if(compVal < array -> index)
+    {
+      array -> index = compVal; 
+    }  
+
+  return array -> index;
+}
+
+/* Retrieve the largest index in the sparse array. 
+ */
+int SparseArray_getMax ( SparseNode * array )
+{
+
+  int compVal;
+
+  if(array == NULL)
+    {
+      printf("Warning! getMax precondition not met: array NULL!\n");
+      return;
+    }
+
+  if(array -> right != NULL)
+    {
+      compVal = SparseArray_getMin(array -> right);
+    }
+
+  if(compVal > array -> index)
+    {
+      array -> index = compVal; 
+    }
+
+  
+
+  return array -> index;
+}
+
 SparseNode * SparseArray_getNode(SparseNode * array, int index )
 {
+
   return NULL;
 }
 
