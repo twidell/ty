@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 SparseNode * SparseArray_mergehelp(SparseNode * array_1, SparseNode * array_2);
-SparseNode * SparseArray_mergeAct(SparseNode * mergeNode, SparseNode * array_2);
+//SparseNode * SparseArray_mergeAct(SparseNode * mergeNode, SparseNode * array_2);
 
 void crash()
 {
@@ -71,7 +71,7 @@ SparseNode *SparseNode_create(int index, int value)
 
 SparseNode * SparseArray_add ( SparseNode * array, int index, int value )
 {
-  if(index != 0)
+  if(value != 0)
     {
       if(array == NULL)
 	{
@@ -266,19 +266,18 @@ SparseNode * SparseArray_remove ( SparseNode * array, int index )
 
 SparseNode * SparseArray_copy(SparseNode * array)
 {
+
+  if(array == NULL)
+    {
+      return NULL;
+    }
+
   SparseNode *copy = NULL;
 
   copy = SparseArray_add(array, array -> index, array -> value);
   
-  if(array -> left == NULL)
-    {
-      copy -> left = SparseArray_copy(array -> left);
-    }
-  if(array -> right == NULL)
-    {
-      copy -> right = SparseArray_copy(array -> right);
-    }
-
+  copy -> right = SparseArray_copy(array -> right);
+  copy -> right = SparseArray_copy(array -> right);
   //SparseNode_check(copy);
 
   return copy;
@@ -299,10 +298,40 @@ SparseNode * SparseArray_copy(SparseNode * array)
  * 
  */
 
+SparseNode * SparseArray_mergehelp(SparseNode * mergeNode, SparseNode * array_2)
+{
+
+  SparseNode * getNode = NULL;
+
+  if(array_2 != NULL)
+    {
+      getNode = SparseArray_getNode(mergeNode, array_2 -> index);
+
+      if(getNode == NULL)
+	{
+	  mergeNode =  SparseArray_add(mergeNode, array_2 -> index, array_2 -> value);
+	  //SparseNode_check(mergeNode);
+	}
+      else
+	{
+	  getNode -> value += array_2 -> value;
+	  if(getNode -> value == 0)
+	    {
+	      //SparseNode_check(mergeNode);
+	      mergeNode = SparseArray_remove(mergeNode, getNode -> index);
+	    }
+	}
+      mergeNode = SparseArray_mergehelp(mergeNode, array_2 -> left);
+      mergeNode = SparseArray_mergehelp(mergeNode, array_2 -> right);
+    }
+
+  return mergeNode;
+}
+
 SparseNode * SparseArray_merge(SparseNode * array_1, SparseNode * array_2)
 {
+  
   SparseNode * mergeNode;
-  //SparseNode * getNode;
 
   if(array_1 == NULL || array_2 == NULL)
     {
@@ -312,32 +341,12 @@ SparseNode * SparseArray_merge(SparseNode * array_1, SparseNode * array_2)
   mergeNode = SparseArray_copy(array_1);
   //SparseNode_check(mergeNode);
 
-  return SparseArray_mergehelp(mergeNode, array_2);
-}
-
-SparseNode * SparseArray_mergeAct(SparseNode * mergeNode, SparseNode * array_2)
-{
-
-  if(mergeNode -> index == array_2 -> index)
-    {
-      return SparseArray_add(mergeNode, array_2 -> index, array_2 -> value);
-      //SparseNode_check(mergeNode);
-    }
-  if(((mergeNode -> value) + (array_2 -> value)) == 0)
-    {
-      //SparseNode_check(mergeNode);
-      mergeNode = SparseArray_remove(mergeNode, array_2 -> index);
-      return mergeNode;
-    }
-
-  mergeNode -> value += array_2 -> value;
-
-  //SparseNode_check(mergeNode);
-
+  mergeNode = SparseArray_mergehelp(mergeNode, array_2);
   return mergeNode;
 }
 
-SparseNode * SparseArray_mergehelp(SparseNode *mergeNode, SparseNode *array_2)
+
+/*SparseNode * SparseArray_mergehelp(SparseNode *mergeNode, SparseNode *array_2)
 {
   if(array_2 == NULL)
     {
@@ -350,7 +359,7 @@ SparseNode * SparseArray_mergehelp(SparseNode *mergeNode, SparseNode *array_2)
   //SparseNode_check(mergeNode);
 
   return SparseArray_mergeAct(mergeNode, array_2);
-}
+  }*/
   
 
 
