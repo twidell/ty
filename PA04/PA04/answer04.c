@@ -2,10 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void SparseArray_mergehelp(SparseNode *, SparseNode *);
-void Sparsearray_mergeAct(Sparsenode *, SparseNode *);
+SparseNode * SparseArray_mergehelp(SparseNode * array_1, SparseNode * array_2);
+SparseNode * SparseArray_mergeAct(SparseNode * mergeNode, SparseNode * array_2);
 
-/*void crash()
+void crash()
 {
   char* bad = NULL;
   *bad = 0;
@@ -35,7 +35,7 @@ SparseNode *SparseNode_check(SparseNode* node)
 #undef CHECK
 
   return 0;
-  }*/
+  }
 
 /* Create a single instance of a sparse array node with a specific
  * index and value. This is a constructor function that allocates
@@ -84,14 +84,17 @@ SparseNode * SparseArray_add ( SparseNode * array, int index, int value )
 	}
       if(index < (array -> index))
 	{
-	  array->left = SparseArray_add(array -> left, index, value);
+	  array -> left = SparseArray_add(array -> left, index, value);
 	}
       if(index > (array -> index))
 	{
-	  array->right = SparseArray_add(array -> right, index, value);
+	  array -> right = SparseArray_add(array -> right, index, value);
 	}
+
+      // SparseNode_check(array);
       
     }
+  //SparseNode_check(array);
 
   return array ;
 }
@@ -142,6 +145,8 @@ int SparseArray_getMin ( SparseNode * array )
     {
       return array -> index; 
     }
+
+  printf("array -> value: %d\n", array -> value);
 
   return SparseArray_getMin(array -> left);
 
@@ -274,6 +279,8 @@ SparseNode * SparseArray_copy(SparseNode * array)
       copy -> right = SparseArray_copy(array -> right);
     }
 
+  //SparseNode_check(copy);
+
   return copy;
 }
 
@@ -294,9 +301,8 @@ SparseNode * SparseArray_copy(SparseNode * array)
 
 SparseNode * SparseArray_merge(SparseNode * array_1, SparseNode * array_2)
 {
-
-  SparseNode *mergeNode;
-  // SparseNode *getnode;
+  SparseNode * mergeNode;
+  //SparseNode * getNode;
 
   if(array_1 == NULL || array_2 == NULL)
     {
@@ -304,40 +310,48 @@ SparseNode * SparseArray_merge(SparseNode * array_1, SparseNode * array_2)
     }
 
   mergeNode = SparseArray_copy(array_1);
-
-
-
-  return SparseArray_mergehelp(mergeNode, array_2);
-  }
-
-void SparseArray_mergehelp(SparseNode *mergeNode, SparseNode *array_2)
-{
-  
-  array -> left = SparseArray_mergehelp(mergeNode -> left, array_2);
-  array -> right = SparseArray_mergehelp(mergeNode -> right, array_2);
-  getNode = SparseArray_mergeAct(mergenode -> left, array_2 -> right);
+  //SparseNode_check(mergeNode);
 
   return SparseArray_mergehelp(mergeNode, array_2);
 }
-  
-void SparseArray_mergeAct(SparseNode * mergeNode, SparseNode array_2)
+
+SparseNode * SparseArray_mergeAct(SparseNode * mergeNode, SparseNode * array_2)
 {
-  SparseNode * curNode;
-  SparseNode * tempNode;
 
-  curnode = mergeNode -> index;
-
-  if(curNode == NULL)
+  if(mergeNode -> index == array_2 -> index)
     {
-      return SparseArray_add(mergeNode);
+      return SparseArray_add(mergeNode, array_2 -> index, array_2 -> value);
+      //SparseNode_check(mergeNode);
     }
-  if(mergenode -> value + array_2 -> value = 0)
+  if(((mergeNode -> value) + (array_2 -> value)) == 0)
     {
-      return SparseArray_remove(mergeNode, mergeNode -> index);
+      //SparseNode_check(mergeNode);
+      mergeNode = SparseArray_remove(mergeNode, array_2 -> index);
+      return mergeNode;
     }
 
-  return (mergeNode -> value + array_2 -> value);
+  mergeNode -> value += array_2 -> value;
+
+  //SparseNode_check(mergeNode);
+
+  return mergeNode;
 }
+
+SparseNode * SparseArray_mergehelp(SparseNode *mergeNode, SparseNode *array_2)
+{
+  if(array_2 == NULL)
+    {
+      return NULL;
+    }
+  
+  mergeNode -> left = SparseArray_mergehelp(mergeNode, array_2 -> left);
+  mergeNode -> right = SparseArray_mergehelp(mergeNode, array_2 -> right);
+
+  //SparseNode_check(mergeNode);
+
+  return SparseArray_mergeAct(mergeNode, array_2);
+}
+  
 
 
  
