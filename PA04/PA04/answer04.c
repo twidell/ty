@@ -1,7 +1,12 @@
 #include "pa04.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
+
+void crash()
+{
+  char* bad = NULL;
+  *bad = 0;
+}
 
 // Don't forget to use the debugger
 // gdb ./pa04
@@ -10,7 +15,7 @@
 // bt 
 SparseNode *SparseNode_check(SparseNode* node)
 {
-#define CHECK(expr, msg) if(expr) { fprintf(stderr, "%s\n", msg); assert(0); }
+#define CHECK(expr, msg) if(expr) { fprintf(stderr, "%s\n", msg); crash(); }
 
   if(node != NULL) {
     if(node->left)
@@ -20,9 +25,13 @@ SparseNode *SparseNode_check(SparseNode* node)
     CHECK((node == node->right), "node->right refers back to node");
     CHECK((node == node->left), "node->left refers back to node");
     CHECK((node->value != 0), "node->value should never be zero");
+
+    
   }
 
 #undef CHECK
+
+  return 0;
 }
 
 /* Create a single instance of a sparse array node with a specific
@@ -59,18 +68,25 @@ SparseNode *SparseNode_create(int index, int value)
 
 SparseNode * SparseArray_add ( SparseNode * array, int index, int value )
 {
-  if(array == NULL)
+  if(value != 0 )
     {
-      return SparseNode_create(index, value);
+      if(array == NULL)
+	{
+	  return SparseNode_create(index, value);
+	}
+      if(value < (array -> value))
+	{
+	  array->left = SparseArray_add(array -> left, index, value);
+	}
+      else if(value > (array -> value))
+	{
+	  array->right = SparseArray_add(array -> right, index, value);
+	}
+      else if(index == array -> index)
+	{
+	  array -> value = value;
+	}
     }
-  if(value < (array -> value))
-    {
-      array->left = SparseArray_add(array -> left, index, value);
-    }
-    else
-      {
-	array->right = SparseArray_add(array -> right, index, value);
-      }
 
   return array ;
 }
@@ -112,25 +128,20 @@ void SparseArray_destroy (SparseNode * array)
 int SparseArray_getMin ( SparseNode * array )
 {
 
-  int compVal;
+  int compVal = 0;
 
   if(array == NULL)
     {
       printf("Warning! getMin precondition not met: array NULL!\n");
-      return;
+      return array -> index;
     }
 
-  if(array -> left != NULL)
+  if(array -> left != NULL)//scrolls left through tree until min found
     {
       compVal = SparseArray_getMin(array -> left);
     }
 
-  if(compVal < array -> index)
-    {
-      array -> index = compVal; 
-    }  
-
-  return array -> index;
+  return compVal;
 }
 
 /* Retrieve the largest index in the sparse array. 
@@ -138,31 +149,38 @@ int SparseArray_getMin ( SparseNode * array )
 int SparseArray_getMax ( SparseNode * array )
 {
 
-  int compVal;
+  int compVal = 0;
 
   if(array == NULL)
     {
       printf("Warning! getMax precondition not met: array NULL!\n");
-      return;
+      return array -> index;
     }
 
-  if(array -> right != NULL)
+  if(array -> right != NULL)//scrolls right through tree until max found
     {
       compVal = SparseArray_getMin(array -> right);
-    }
+    }  
 
-  if(compVal > array -> index)
-    {
-      array -> index = compVal; 
-    }
-
-  
-
-  return array -> index;
+  return compVal;
 }
 
 SparseNode * SparseArray_getNode(SparseNode * array, int index )
 {
+
+  if(index = (array -> index))
+    {
+      return array;
+    }
+  else if((array -> index) > index)
+    {
+      return SparseArray_getNode(array -> left, index);
+    }
+  else if((array -> index) < index)
+    {
+      return SparseArray_getNode(array -> right, index);
+    }
+
 
   return NULL;
 }
@@ -215,6 +233,17 @@ SparseNode * SparseArray_copy(SparseNode * array)
 
 SparseNode * SparseArray_merge(SparseNode * array_1, SparseNode * array_2)
 {
+
+  SparseNode *mergeNode;
+  SparseNode *getnode;
+ 
+  if(array_1 == NULL || array_2 == NULL)
+    {
+      printf("Incorrect arrays given!\n");
+      return NULL;
+    }
+
+
   return NULL;
 }
 
