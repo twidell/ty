@@ -76,14 +76,14 @@ SparseNode * SparseArray_add (SparseNode * array, int index, int value)
    }
       if(array == NULL)
 	{
-	  return SparseNode_create(index, value);
+	  return SparseNode_create(index, value);//creates index if NULL found
 	}
-      if(index == (array -> index))
+      if(index == (array -> index))//returns value into existing index
 	{
 	  array -> value = value;
 	  return array;
 	}
-      if(index < (array -> index))
+      if(index < (array -> index))//scrolls left creating indices as it goes
 	{
 	  if(array -> left == NULL)
 	    {
@@ -94,7 +94,7 @@ SparseNode * SparseArray_add (SparseNode * array, int index, int value)
 	      array -> left = SparseArray_add(array -> left, index, value);
 	    }
 	}
-      else
+      else//scrolls right creating indices as it goes
 	{
 	  if(array -> right == NULL)
 	    {
@@ -108,7 +108,7 @@ SparseNode * SparseArray_add (SparseNode * array, int index, int value)
 
   return array;
 }
-
+//Builds array with given length
  SparseNode * SparseArray_build(int * indicies, int * values, int length)
   {
     SparseNode * array = NULL;
