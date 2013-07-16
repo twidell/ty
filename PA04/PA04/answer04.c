@@ -5,7 +5,7 @@
 SparseNode * SparseArray_mergehelp(SparseNode * array_1, SparseNode * array_2);
 //SparseNode * SparseArray_mergeAct(SparseNode * mergeNode, SparseNode * array_2);
 
-void crash()
+/*void crash()
 {
   char* bad = NULL;
   *bad = 0;
@@ -35,7 +35,7 @@ SparseNode *SparseNode_check(SparseNode* node)
 #undef CHECK
 
   return 0;
-  }
+  }*/
 
 /* Create a single instance of a sparse array node with a specific
  * index and value. This is a constructor function that allocates
@@ -89,12 +89,8 @@ SparseNode * SparseArray_add ( SparseNode * array, int index, int value )
       if(index > (array -> index))
 	{
 	  array -> right = SparseArray_add(array -> right, index, value);
-	}
-
-      // SparseNode_check(array);
-      
+	} 
     }
-  //SparseNode_check(array);
 
   return array ;
 }
@@ -121,14 +117,14 @@ SparseNode * SparseArray_add ( SparseNode * array, int index, int value )
 
 void SparseArray_destroy (SparseNode * array)
 {
-  if(array == NULL)
+  if(array != NULL)
     {
-      return;
-    }
 
-  SparseArray_destroy(array -> left);
-  SparseArray_destroy(array -> right);
-  free(array);
+      SparseArray_destroy(array -> left);
+      SparseArray_destroy(array -> right);
+      free(array);
+
+    }
 }
   /* Retrieve the smallest index in the sparse array. 
  */
@@ -227,18 +223,19 @@ SparseNode * SparseArray_remove ( SparseNode * array, int index )
       array -> right = SparseArray_remove(array -> right, index);
       return array;
     }
-  if(array -> left == NULL && array -> right == NULL)
+  if(((array -> left) == NULL) && ((array -> right) == NULL))
     {
       free(array);
       return NULL;
     }
-  if(array -> left == NULL && array -> right != NULL)
+
+  if((array -> left) == NULL)
     {
       SparseNode * rc = array -> right;
       free(array);
       return rc;
     }
- if(array -> right == NULL && array -> left != NULL)
+  if((array -> right) == NULL)
     {
       SparseNode * lc = array -> left;
       free(array);
@@ -272,13 +269,12 @@ SparseNode * SparseArray_copy(SparseNode * array)
       return NULL;
     }
 
-  SparseNode *copy = NULL;
+  SparseNode * copy = NULL;
 
-  copy = SparseArray_add(array, array -> index, array -> value);
+  copy = SparseArray_add(copy, array -> index, array -> value);
   
   copy -> right = SparseArray_copy(array -> right);
-  copy -> right = SparseArray_copy(array -> right);
-  //SparseNode_check(copy);
+  copy -> left = SparseArray_copy(array -> left);
 
   return copy;
 }
@@ -298,36 +294,6 @@ SparseNode * SparseArray_copy(SparseNode * array)
  * 
  */
 
-SparseNode * SparseArray_mergehelp(SparseNode * mergeNode, SparseNode * array_2)
-{
-
-  SparseNode * getNode = NULL;
-
-  if(array_2 != NULL)
-    {
-      getNode = SparseArray_getNode(mergeNode, array_2 -> index);
-
-      if(getNode == NULL)
-	{
-	  mergeNode =  SparseArray_add(mergeNode, array_2 -> index, array_2 -> value);
-	  //SparseNode_check(mergeNode);
-	}
-      else
-	{
-	  getNode -> value += array_2 -> value;
-	  if(getNode -> value == 0)
-	    {
-	      //SparseNode_check(mergeNode);
-	      mergeNode = SparseArray_remove(mergeNode, getNode -> index);
-	    }
-	}
-      mergeNode = SparseArray_mergehelp(mergeNode, array_2 -> left);
-      mergeNode = SparseArray_mergehelp(mergeNode, array_2 -> right);
-    }
-
-  return mergeNode;
-}
-
 SparseNode * SparseArray_merge(SparseNode * array_1, SparseNode * array_2)
 {
   
@@ -344,6 +310,45 @@ SparseNode * SparseArray_merge(SparseNode * array_1, SparseNode * array_2)
   mergeNode = SparseArray_mergehelp(mergeNode, array_2);
   return mergeNode;
 }
+
+
+SparseNode * SparseArray_mergehelp(SparseNode * mergeNode, SparseNode * array_2)
+{
+
+  SparseNode * getNode = NULL;
+
+  if(array_2 != NULL)
+    {
+      mergeNode = SparseArray_mergehelp(mergeNode, array_2 -> left);
+      mergeNode = SparseArray_mergehelp(mergeNode, array_2 -> right);
+
+      getNode = SparseArray_getNode(mergeNode, array_2 -> index);
+      //printf("getnode %d\n", getNode);
+
+      if(getNode == NULL)
+	{
+	  mergeNode = SparseArray_add(mergeNode, array_2 -> index, array_2 -> value);
+	  //SparseNode_check(mergeNode);
+	}
+      else
+	{
+	  // printf("getnode %d\n", getNode);
+
+	  getNode -> value += array_2 -> value;
+	  //printf("getnode %d\n", getNode);
+
+	  if(getNode -> value == 0)
+	    {
+	      //SparseNode_check(mergeNode);
+	      mergeNode = SparseArray_remove(mergeNode, getNode -> index);
+	    }
+	}
+      
+    }
+
+  return mergeNode;
+}
+
 
 
 /*SparseNode * SparseArray_mergehelp(SparseNode *mergeNode, SparseNode *array_2)
