@@ -1,24 +1,48 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-//#include "tree.h"
 #include "pa05.h"
+
+void Huff_postOrderPrint(HuffNode *tree, FILE * fptr_out)
+{
+    // Base case: empty subtree
+    if (tree == NULL) {
+		return;
+    }
+
+    // Recursive case: post-order traversal
+
+    // Visit left
+    fprintf(fptr_out, "Left\n");
+    Huff_postOrderPrint(tree->left, fptr_out);
+    fprintf(fptr_out, "Back\n");
+    // Visit right
+    fprintf(fptr_out, "Right\n");
+    Huff_postOrderPrint(tree->right, fptr_out);
+    fprintf(fptr_out, "Back\n");
+    // Visit node itself (only if leaf)
+    if (tree->left == NULL && tree->right == NULL) {
+      fprintf(fptr_out, "Leaf: %c\n", tree->value);
+    }
+    
+
+}
 
 
 //Stack Push(Stack, HuffNode);
 //Stack Pop(Stack, HuffNode);
 //int Stack_count(Stack);
 
-HuffNode * H_create(int);
+/*HuffNode * H_create(char);
 Stack * create_node(HuffNode *, Stack *);
 Stack * Pop(Stack *);
 void destroy_tree(HuffNode *);
-HuffNode * read_header(FILE*);
-char get_bits(FILE*, int);
-void Push(Stack *);
-Huffnode create_chartree(File *);
+//HuffNode * read_header(FILE*);
+//char get_bits(FILE*, int);
+Stack * Push(Stack *, HuffNode *);
+HuffNode * create_chartree(FILE *);*/
 
-int stack_count(Stack *stack)
+/*int stack_count(Stack *stack)
 {
   if(stack != NULL)
     {
@@ -26,31 +50,36 @@ int stack_count(Stack *stack)
     }
     }*/
 
-HuffNode *H_create(int value)//creates huffman node
-{
-  HuffNode *node = malloc(sizeof(HuffNode));
-  if(node != NULL)
+//creates huffman node
+HuffNode * H_create(char value)
     {
+      // HuffNode *node = NULL;
+      HuffNode *node = malloc(sizeof(HuffNode));
+  
       node -> value = value;
       node -> left  = NULL;
       node -> right = NULL;
       //printf("%d\n", node->value);
       return node;
+
+      if(node == NULL)
+	{
+	  return NULL;
+	}
     }
-}
 
 Stack * create_node(HuffNode * left, Stack * node)//creates huffman tree
 {
-  Stack *node = malloc(sizeof(Stack));
-  node -> left = left;
-  node -> right = right;
+  Stack *leaf_node = malloc(sizeof(Stack));
+  leaf_node -> next = node;
+  leaf_node -> node = left;
 
-  while(node == NULL)
+  while(leaf_node == NULL)
     {
       return NULL;
     }
 
-  return node;
+  return leaf_node;
 }
 
 void destroy_tree(HuffNode * tree)
@@ -63,140 +92,189 @@ void destroy_tree(HuffNode * tree)
     }
 }
 
-void Push(Stack *leaf)
+Stack * Push(Stack *head, HuffNode *node)
 {
-  Stack *curr = leaf->next;
-  Stack *prev = curr->next;
-  free(curr);
-  curr = prev;
-  leaf->next = NULL;
+  Stack *curr = malloc(sizeof(Stack));
+  curr -> next = head;
+  curr -> node = node;
+
+  return curr;
 }
 
 //read in one bit, convert to 1 or 0, read for 8 more bits, read in 1 bit, read in 8 more bits...
-HuffNode *read_header(FILE *fptr)
+/*HuffNode *read_header(FILE *fptr)
 {
   char ch = 0;
   fseek(fptr, 0, SEEK_SET);
   Stack *stack = NULL;
   int initial = 1;
 
-  while((ch = get_bits(fptr, 1) != 0 || stack->next != NULL))
+  while((ch = get_bits(fptr, 1) == 1 || initial == 1 || stack->next != NULL))
     {
       initial = 0;
 
       if(ch == 1)
 	{
 	  ch = get_bits(fptr, 8);
-	  stack = create_node(NULL, stack);
+	  stack = Push(NULL, stack);
 	  stack->left = H_create(ch);
 	}
 
       if(ch == 0)
 	{
-	  HuffNode *base = H_create(0);
-	  base->right = stack->left;
+	  HuffNode *node = H_create(0);
+	  node->right = stack->left;
 	  stack = destroy_tree(stack);
-	  base->left = stack->right;
-	  stack = node_destroy(stack);
-	  stack = create_node(base, stack);
+	  node->left = stack->right;
+	  stack = Pop(stack);
+	  stack = Push(node, stack);
 	}
     }
 
-  Stack * temp = stack;
-  free(stack);
-  return temp -> left;
+    Pop(stack);
     
-}
+    }*/
 
-char get_bits(FILE *fptr, int bit_num)
+char get_bits(FILE *fptr, int bit_num, int * ct, unsigned char * value)
 {
-  static unsigned char ch;
-  static int ct;//ct is the amount of bits left over from reading the file
   unsigned char character;
 
-  if(ct == 0)
+  if(*ct == 0)
     {
-      fread(&ch, 1, 1, fptr);
-      ct = 8;
+      fread(value, 1, 1, fptr);
+      *ct = 8;
     }
-  if(ct < bit_num)
+  if(*ct < bit_num)
     {
-      character = ch;
-      character = (character << (8 - ct));
-      fread(&ch, 1, 1, fptr);
-      character = (character | (ch >> ct));
+      character = *value;
+      character = (character << (8 - *ct));
+      fread(value, 1, 1, fptr);
+      character = (character | (*value >> *ct));
 
       return character;
     }
 
-  character = ch;
+  character = *value;
   if(bit_num == 1)
     {
-      character = (character >> (ct - bit_num)) & 0x01;
-      ct--;
+      character = (character >> (*ct - bit_num))&0x01;
+      *ct = (*ct - 1);
     }
   else
     {
-      character = (character >> (ct - bit_num));
-      ct = 0;
+      character = (character >> (*ct - bit_num));
+      *ct = 0;
     }
 
   return character;
 
-}
+  }
 
-Stack Pop(Stack *node)
+Stack * Pop(Stack *node)
 {
-  Stack *p = node->next;
-
+  Stack * p = node->next;
   free(node);
   return p;
 }
 
-HuffNode * create_chartree(File * fptr)
+HuffNode * create_chartree(FILE * fptr)
 {
   int flag = 0;
 
   Stack * top = NULL;
   char ch;
-  char chardata;
+  char chardata = 0;
 
-  HuffNode *rightc;
-  Huffnode *leftc;
+  HuffNode *head = NULL;
+  HuffNode *leftc;
   HuffNode *temp;
 
   while(flag == 0)
     {
       ch = fgetc(fptr);
 
-      top = Push(top, create_node(chardata));
+      if(ch == '1')
+	{
+	  chardata = fgetc(fptr);
+	  top = Push(top, H_create(chardata));
+       	}
+      else
+        {
+	  head = top -> node;
+	  top = Pop(top);
+
+	  if(top == NULL)
+	    {
+	      flag = 1;
+	    }
+	  else
+	    {
+	      leftc = top -> node;
+
+	      temp = H_create(0);
+	      temp -> right = head;
+	      temp -> left = leftc;
+
+	      top = Pop(top);
+	      top = Push(top, temp);
+	    }
+
+	}
     }
 
-  if(ch == '0')
-    {
-      rightc = top -> node;
-      top = Pop(top);
+      return head;
 
-      if(top == NULL)
+    }
+
+ HuffNode * create_bittree(FILE * fptr)
+{
+  int flag = 0;
+
+  Stack * top = NULL;
+  char ch;
+  char chardata = 0;
+  unsigned char build;
+  HuffNode *head = NULL;
+  HuffNode *leftc;
+  HuffNode *temp;
+  int ct = 0;
+
+  while(flag == 0)
+    {
+      ch = get_bits(fptr, 1, &ct, &build);
+
+      if(ch == 1)
 	{
-	  flag = 1;
+	  chardata = get_bits(fptr, 8, &ct, &build);
+	  top = Push(top, H_create(chardata));
 	}
+
       else
 	{
-	  leftc = top -> node;
-
-	  temp = create_node(0);
-	  temp -> right = rightc;
-	  temp -> ledt = leftc;
-
+	  head = top -> node;
 	  top = Pop(top);
-	  top = Push(top, temp);
-	}
 
+	  if(top == NULL)
+	    {
+	      flag = 1;
+	    }
+	  else
+	    {
+	      leftc = top -> node;
+
+	      temp = H_create(0);
+	      temp -> right = head;
+	      temp -> left = leftc;
+
+	      top = Pop(top);
+	      top = Push(top, temp);
+	    }
+
+	}
     }
 
-  return rightc;
+      return head;
 
 }
 
-     
+         
