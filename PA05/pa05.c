@@ -1,21 +1,27 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "pa05.h"
+#include <string.h>
+#include "tree.h"
+#include "utility.h"
+
 
 int main ( int argc , char ** argv )
 {
-  if(argc != 3)
+  FILE *fptr;
+  HUffNode *head;
+
+  if(!argcount(argc))
     {
-      printf("pa05 does not receive correct amount of arguments!\n");
       return EXIT_FAILURE;
     }
 
-  //initializing input file
-  FILE * fptr = NULL;
-  fptr = fopen(argv[1], "r");
-  if (fptr == NULL)
-    {
-      printf("File error!\n");
-      return EXIT_FAILURE;
-    }
+  head = load_head(fptr);
+
+  Huff_postOrderPrint(head);
+  CloseFile(fptr);
+
+  destroy(head);
+
+  return EXIT_SUCCESS;
+
 }
