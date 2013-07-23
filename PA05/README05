@@ -1,0 +1,36 @@
+/*IN MAIN, pa05.c*/
+
+First checks for correct amount of arguments in file (3)
+If no 3 then exit
+
+Variable "length" is set to the length of the argument string
+File pointer fptr_in points to beginning of file using "r"
+File pointer fptr_out points to end of file using "w"
+
+If the beginning of file is null, exit
+If the end of file is null, exit
+
+The following if statement checks for the chracter read at the end of the test case files. If we're wanting to create an array of characters, it looks for an "h" at the end of the name of the test file as character files end in ".ch". Inversely, binary files end in ".bt" and would be read through if the first if statement of reading a character file does not pass.
+
+Previously opened file pointers are closed, returns exit success.
+
+/*IN UTILITY.C*/
+Huff_postOrderPrint: prints array of characters using the file pointer "out", meaning as "w". Given originally in tree.h file, only changes were to pass file pointer through the function so makefile wouldn't ahve to be manipulated to write to output files.
+
+H_create: creates huffman tree, initializing left and right leaves to NULL and returning the head node. Always checks to see if head node is NULL.
+
+create_node: creates a node of the huffman tree, passing through an attribute of the tree (lptr stand for leaf pointer)
+
+destroy_tree: destroys all attributes of the huffman tree
+
+get_bits: this function was definitely the hardest to write and I had a lot of help from TA's writing it, so my explanation will cover the "gist" of the function. Essentially, the function passes through a file pointer which read part of the binary file, the size of the character bits (as represented by "bit_num"), a counter passed by address, and an unsigned char passed by address. As the file is read, it progresses based on "ct". If ct is initially 0, it reads the beginning of the file and ct is initialized to 8 which is the bit size of a character. Then, if the counter is less than the size of the total bits, the variable "character" is assigned to the value of the character as passed by address. The "masking" effect occurs at (character << (8 - *ct), as the number of total (expected) bits is subtracted from an iterated counter, the masking takes palce with the designated "1"s and "0"s that are assigned to "character" afterwards. If character returnes a "1", the value of character is converted from hexidecimal form and ct is decremented. If character returns a "0", then the ct goes to 0 returns the 0 as a "mask" (I think?).
+
+create_chartree: creates the character huffman tree. If "ch" is 1 then the character data is retrieved through fgetc and passed through to the top of the tree using Push. If it's not 1, it pops it off the stack and scrolls down through the tree, creating a temporary node that allows for the head node to be popped off and the temporary node to be pushed to the top of the stack.
+
+create_bittree: accomplishes the same function as create_chartree except uses get_bits function to retrieve bit data instead of fgetc
+
+Pop: pops the node off the stack
+
+Push: pushes a node onto the stack
+
+

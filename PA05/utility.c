@@ -68,11 +68,11 @@ HuffNode * H_create(char value)
 	}
     }
 
-Stack * create_node(HuffNode * left, Stack * node)//creates huffman tree
+Stack * create_node(HuffNode * lptr, Stack * node)//creates huffman tree
 {
   Stack *leaf_node = malloc(sizeof(Stack));
   leaf_node -> next = node;
-  leaf_node -> node = left;
+  leaf_node -> node = lptr;
 
   while(leaf_node == NULL)
     {
