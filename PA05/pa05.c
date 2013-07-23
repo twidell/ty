@@ -1,27 +1,32 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "tree.h"
-#include "utility.h"
+#include "pa05.h"
+//#include "tree.h"
+//#include "utility.h"
 
+//void CloseFile(FILE * fptr)
 
-int main ( int argc , char ** argv )
+int main (int argc , char ** argv )
 {
   FILE *fptr;
-  HUffNode *head;
+  HuffNode *head;
 
-  if(!argcount(argc))
+  if(argc < 3)
     {
+      printf("Not enough arguments read!\n");
       return EXIT_FAILURE;
     }
 
-  head = load_head(fptr);
+  head = read_head(fptr);
 
   Huff_postOrderPrint(head);
-  CloseFile(fptr);
+  fclose(fptr);
+  //CloseFile(fptr);
 
   destroy(head);
 
   return EXIT_SUCCESS;
 
 }
+

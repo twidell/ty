@@ -5,7 +5,7 @@ typedef struct _huffnode {
   int value;
   struct _huffnode *left;
   struct _huffnode *right;
-} HuffNode;
+  } HuffNode;
 
 typedef struct _stack {
   struct _stack * next;
