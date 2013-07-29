@@ -29,16 +29,17 @@ uint128 alphaTou128(const char * str)
 /**
  * The caller is responsible for freeing the result 
  */
-char * u128ToString(uint128 value)
+
+/*char * u128ToString(uint128 value)
 {
   int i;
   for(i = 0;
   
     printf("Biiigggg number: %s\n", );
     free(w_str);
-    return EXIT_SUCCESS;*/
+    return EXIT_SUCCESS;
     return NULL;
-}
+}*/
 
 /**
  * Test is 'value' is prime.
@@ -51,21 +52,25 @@ char * u128ToString(uint128 value)
  */
 int primalityTestParallel(uint128 value, int n_threads)
 {
-  //if (value % 2 == 0) return FALSE;
-  long int max = floor(sqrt(value));
+  if (value % 2 == 0) return FALSE;
+  if(value == 1 || value == 2) return FALSE;
+
+  uint128 ct1, ct2, ct3;
+  uint128 max = floor(sqrt(value));
   if(value == 1 || value == 2)
     {
       return TRUE;
     }
-  for (long int i = 3; i < max; i += 2) {
-    if (n % ((2 * i) + 1) == 0) return FALSE;
-  }
+  for (long int i = 3; i < max; i += 2) 
+    {
+      if (n % ((2 * i) + 1) == 0) return FALSE;
+    }
   return TRUE;
 
   //return FALSE;
 }
 
-char * u128toString(uint128 value) 
+/*char * u128toString(uint128 value) 
 {
 
 int i = 0; 
@@ -90,4 +95,18 @@ while(value != 0 && i != 0)
 printf("String: %s\n\n", str);
 
 return str; 
+}*/
+
+void *ptest(void *PP)
+{
+  obj * test = obj->object;
+
+  for(i = test->start; i <= test->end; i += 2)
+    {
+      test -> pnum = FALSE;
+      return NULL;
+    }
+  test -> pnum = TRUE;
+
+  return NULL;
 }
