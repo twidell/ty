@@ -52,12 +52,69 @@ uint128 alphaTou128(const char * str)
  */
 int primalityTestParallel(uint128 value, int n_threads)
 {
+
   if (value % 2 == 0) return FALSE;
   if(value == 1 || value == 2) return FALSE;
 
   uint128 ct1, ct2, ct3;
+  int final = 0;
   uint128 max = floor(sqrt(value));
-  if(value == 1 || value == 2)
+  uint128 chunk;
+  chunk = (max + n_threads + 1) / n_threads;
+
+  obj * piece = malloc(sizeof(obj) * n_threads);
+  pthread_attr_t * attr = malloc(sizeof(pthread_attr_t) *n_threads);
+  pthread_t * thread = malloc(sizeof(pthread_t) * n_threads);
+
+  for(ct1 = 0; ct1 < n_threads; ct1++)
+    {
+      piece[ct1].start = ct1 * chunk;
+      piece[ct1].end = (ct1 + 1) * chunk - 1;
+      piece[ct1].number = value;
+    }
+  if(piece[ct1].start < 3)
+    {
+      piece[ct1].start = 3;
+    }
+  if((piece[ct1].start % 2) == 0)
+    {
+      piece[ct1].start += 1;
+    }
+
+  pthread_attr_init(&attr[ct1]);
+  pthread_create(&thread[ct1], &attr, ptest, (void*)piece[ct1]);
+
+}
+
+
+for(ct2 = 0; ct2 < n_threads; ct2++)
+  {
+    pthread_join(thread[ct2], NULL);
+  }
+for(ct3 = 0; ct3 < n_threads; ct3++)
+  {
+    final = TRUE;
+
+    if(piece[ct3].pnum == 0)
+      {
+	ct3 = n_threads;
+        final = FALSE;
+      }
+  }
+
+free(thread);
+free(attr);
+free(piece);
+
+return final;
+
+}
+
+
+
+
+
+  /* if(value == 1 || value == 2)
     {
       return TRUE;
     }
@@ -65,7 +122,7 @@ int primalityTestParallel(uint128 value, int n_threads)
     {
       if (n % ((2 * i) + 1) == 0) return FALSE;
     }
-  return TRUE;
+    return TRUE;*/
 
   //return FALSE;
 }
@@ -99,7 +156,7 @@ return str;
 
 void *ptest(void *PP)
 {
-  obj * test = obj->object;
+  obj * test = (obj*)PP;
 
   for(i = test->start; i <= test->end; i += 2)
     {
