@@ -53,8 +53,7 @@ uint128 alphaTou128(const char * str)
 int primalityTestParallel(uint128 value, int n_threads)
 {
 
-  if (value % 2 == 0) return FALSE;
-  if(value == 1 || value == 2) return FALSE;
+  if(value == 1 || value == 2 || value % 2 == 0) return FALSE;
 
   uint128 ct1, ct2, ct3;
   int final = 0;
@@ -68,24 +67,24 @@ int primalityTestParallel(uint128 value, int n_threads)
 
   for(ct1 = 0; ct1 < n_threads; ct1++)
     {
+
       piece[ct1].start = ct1 * chunk;
       piece[ct1].end = (ct1 + 1) * chunk - 1;
       piece[ct1].number = value;
-    }
-  if(piece[ct1].start < 3)
-    {
-      piece[ct1].start = 3;
-    }
-  if((piece[ct1].start % 2) == 0)
-    {
-      piece[ct1].start += 1;
-    }
 
-  pthread_attr_init(&attr[ct1]);
-  pthread_create(&thread[ct1], &attr, ptest, (void*)piece[ct1]);
+      if(piece[ct1].start < 3)
+	{
+	  piece[ct1].start = 3;
+	}
+      if((piece[ct1].start % 2) == 0)
+	{
+	  piece[ct1].start += 1;
+	}
+    
 
-}
-
+      pthread_attr_init(&attr[ct1]);
+      pthread_create(&thread[ct1], &attr[ct1], ptest, (void*)&piece[ct1]);
+    }
 
 for(ct2 = 0; ct2 < n_threads; ct2++)
   {
@@ -93,13 +92,14 @@ for(ct2 = 0; ct2 < n_threads; ct2++)
   }
 for(ct3 = 0; ct3 < n_threads; ct3++)
   {
-    final = TRUE;
+    //final = TRUE;
 
     if(piece[ct3].pnum == 0)
       {
 	ct3 = n_threads;
         final = FALSE;
       }
+    final = TRUE;
   }
 
 free(thread);
@@ -121,9 +121,9 @@ return final;
     return TRUE;*/
 
   //return FALSE;
-}
 
-char * u128toString(uint128 value) 
+
+char * u128ToString(uint128 value) 
 {
 
   int length = 0; 
@@ -142,21 +142,29 @@ char * u128toString(uint128 value)
 
   for(i = length - 1; i >= 0; i--)
     {
-      string[1] = (temp2 % 10) + '\0';
+      string[i] = (temp2 % 10) + '0';
       temp2 /= 10;
     }
+
   return string;
 }
 
 void *ptest(void *PP)
 {
+
+  uint128 i;
+
   obj * test = (obj*)PP;
 
   for(i = test->start; i <= test->end; i += 2)
     {
-      test -> pnum = FALSE;
-      return NULL;
+      if((test -> number % i) == 0)
+        {
+          test -> pnum = FALSE;
+          return NULL;
+        }
     }
+
   test -> pnum = TRUE;
 
   return NULL;
