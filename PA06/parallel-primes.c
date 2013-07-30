@@ -13,7 +13,7 @@
 
 void *ptest(void*);
 
-
+//structure created for "pieces" of prime being fed through thread
 typedef struct prime
 {
   int pnum;
@@ -56,11 +56,12 @@ int primalityTestParallel(uint128 value, int n_threads)
   if(value == 1 || value == 2) return TRUE;
   if(value % 2 == 0) return FALSE;
 
-  uint128 ct1, ct2, ct3;
+  uint128 ct1, ct2, ct3;//ct1 refers to value chunks, ct2 refers to threads
   int final = 0;
   uint128 max = floor(sqrt(value));//finds maximum
   uint128 chunk;//chunk of prime being put through different threads
   chunk = (max + n_threads + 1) / n_threads;
+  chunk = floor(chunk);
 
   //allocations
 
@@ -77,10 +78,13 @@ int primalityTestParallel(uint128 value, int n_threads)
       piece[ct1].end = (ct1 + 1) * chunk - 1;
       piece[ct1].number = value;
 
+      //ensures no more than 4 threads
       if(piece[ct1].start < 3)
 	{
 	  piece[ct1].start = 3;
 	}
+
+      //ensures only odds are tested
       if((piece[ct1].start % 2) == 0)
 	{
 	  piece[ct1].start += 1;
@@ -89,6 +93,7 @@ int primalityTestParallel(uint128 value, int n_threads)
       //threads become initialized
       pthread_attr_init(&attr[ct1]);
       pthread_create(&thread[ct1], &attr[ct1], ptest, (void*)&piece[ct1]);
+
     }
 
   //threads joined
@@ -100,19 +105,22 @@ for(ct2 = 0; ct2 < n_threads; ct2++)
 //assigns value to pnum
 for(ct3 = 0; ct3 < n_threads; ct3++)
   {
+    final = TRUE;
 
-    if(piece[ct3].pnum == 0)
+    if(piece[ct3].pnum != 1)
       {
 	ct3 = n_threads;
         final = FALSE;
       }
-    final = TRUE;
+    //final = FALSE;
   }
 
+//frees all mallocs
 free(thread);
 free(attr);
 free(piece);
 
+//returns final test of TRUE or FALSE
 return final;
 
 }
@@ -139,16 +147,17 @@ char * u128ToString(uint128 value)
   uint128 temp2 = value;
   int i;
 
+  //finds length of number
   while(temp != 0)
     {
       temp /= 10;
       length++;
     }
-  char * string = malloc(sizeof(char) * (length + 1));
+  char * string = malloc(sizeof(char) * (length + 1));//mallocs memory for string
 
-  string[length] = '\0';
+  string[length] = '\0';//sets null terminator at end of string
 
-  for(i = length - 1; i >= 0; i--)
+  for(i = length - 1; i >= 0; i--)//iterates through ones place and puts value into string, decs
     {
       string[i] = (temp2 % 10) + '0';
       temp2 /= 10;
@@ -164,16 +173,19 @@ void *ptest(void *PP)
 
   obj * test = (obj*)PP;
 
-  for(i = test->start; i <= test->end; i += 2)
+  for(i = test->start; i <= test->end; i++)//only testing for odds
     {
-      if((test -> number % i) == 0)
+      if((test -> number % ((2 * i) + 1)) != 0)//checks to see if prime by modding odd number
         {
-          test -> pnum = FALSE;
+	  printf("Test -> start: %d\n\n", test->start);
+          test -> pnum = TRUE;
           return NULL;
         }
+      //test -> pnum = FALSE;
     }
 
-  test -> pnum = TRUE;
+  test -> pnum = FALSE;
+  //returns attribute of struct as TRUE or FALSE
 
   return NULL;
 }
