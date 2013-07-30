@@ -53,7 +53,7 @@ uint128 alphaTou128(const char * str)
 int primalityTestParallel(uint128 value, int n_threads)
 {
 
-  if(value == 1 || value == 2) return TRUE;
+  if(value == 1 || value == 2 || value == 3) return TRUE;
   if(value % 2 == 0) return FALSE;
 
   uint128 ct1, ct2, ct3;//ct1 refers to value chunks, ct2 refers to threads
@@ -61,7 +61,7 @@ int primalityTestParallel(uint128 value, int n_threads)
   uint128 max = floor(sqrt(value));//finds maximum
   uint128 chunk;//chunk of prime being put through different threads
   chunk = (max + n_threads + 1) / n_threads;
-  chunk = floor(chunk);
+  //chunk = floor(chunk);
 
   //allocations
 
@@ -102,10 +102,12 @@ for(ct2 = 0; ct2 < n_threads; ct2++)
     pthread_join(thread[ct2], NULL);
   }
 
+ final = TRUE;
+
 //assigns value to pnum
 for(ct3 = 0; ct3 < n_threads; ct3++)
   {
-    final = TRUE;
+    //final = FALSE;
 
     if(piece[ct3].pnum != 1)
       {
@@ -173,18 +175,17 @@ void *ptest(void *PP)
 
   obj * test = (obj*)PP;
 
-  for(i = test->start; i <= test->end; i++)//only testing for odds
+  for(i = test->start; i <= test->end; i+=2)//only testing for odds
     {
-      if((test -> number % ((2 * i) + 1)) != 0)//checks to see if prime by modding odd number
+      if((test->number % i) == 0)//checks to see if prime by modding odd number
         {
-	  printf("Test -> start: %d\n\n", test->start);
-          test -> pnum = TRUE;
+          test -> pnum = FALSE;
           return NULL;
         }
       //test -> pnum = FALSE;
     }
 
-  test -> pnum = FALSE;
+test -> pnum = TRUE;
   //returns attribute of struct as TRUE or FALSE
 
   return NULL;
