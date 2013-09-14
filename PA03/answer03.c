@@ -243,7 +243,7 @@ void swap(int *arr, int ind1, int ind2)
  */
 int search(int * arr, int length, int key)
 {
-    return searchhelp(arr, 0, length, key);
+    return searchhelp(arr, 0, length - 1, key);
 }
 
 int searchhelp(int *arr, int low, int high, int key)
