@@ -138,22 +138,27 @@ int * readIntegers(const char * filename, int * numberOfIntegers)
  */
 void sorthelp(int * arr, int start, int end)
 {
-	int lower = start;
-	int upper = end;
+	int lower = start + 1;
+	int upper = end - 1;
 	int pivot;
 
 	pivot = arr[start];
-	if(end - start == 1)
+
+	if((lower - upper) == 1)
+	{
+		return;
+	}	
+	else
 	{
 		
 
-		while(lower < upper)
+		while(lower <= upper)
 		{
-			while(arr[lower] < pivot && lower <= end && upper > lower)
+			while(arr[lower] < pivot && lower < end)
 			{
 				lower++;
 			}
-			while(arr[upper] > pivot && upper >= start && upper >= lower)
+			while(arr[upper] > pivot)
 			{
 				upper--;
 			}
@@ -165,23 +170,21 @@ void sorthelp(int * arr, int start, int end)
 			}
 			
 			
-			sorthelp(arr , start, upper);
-			sorthelp(arr, upper + 1, end);
+			//sorthelp(arr , start, upper);
+			//sorthelp(arr, upper + 1, end);
 		}
-			
+
+	swap(arr, start, lower - 1);
+
 	if(start < upper)
 	{		
-	sorthelp(arr , start, upper);
+		sorthelp(arr , start, upper);
 	}
 	if(lower < end)
 	{
-	sorthelp(arr, lower, end);
+		sorthelp(arr, lower, end);
 	}
-	swap(arr, start, lower - 1);
-	}
-	else
-	{
-		return;
+	
 	}
 
 }
