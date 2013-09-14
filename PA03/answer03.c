@@ -144,13 +144,8 @@ void sorthelp(int * arr, int start, int end)
 
 	pivot = arr[start];
 
-	if((lower - upper) == 1)
+	if(end - start >= 1)
 	{
-		return;
-	}	
-	else
-	{
-		
 
 		while(lower <= upper)
 		{
@@ -168,13 +163,14 @@ void sorthelp(int * arr, int start, int end)
 			lower++;
 			upper--;
 			}
-			
-			
-			//sorthelp(arr , start, upper);
-			//sorthelp(arr, upper + 1, end);
 		}
 
 	swap(arr, start, lower - 1);
+	}
+	else
+	{
+	return;
+	}
 
 	if(start < upper)
 	{		
@@ -185,7 +181,7 @@ void sorthelp(int * arr, int start, int end)
 		sorthelp(arr, lower, end);
 	}
 	
-	}
+	
 
 }
 
@@ -247,7 +243,7 @@ void swap(int *arr, int ind1, int ind2)
  */
 int search(int * arr, int length, int key)
 {
-    return searchhelp(arr, 0, 0, key);
+    return searchhelp(arr, 0, length, key);
 }
 
 int searchhelp(int *arr, int low, int high, int key)
@@ -256,7 +252,7 @@ int searchhelp(int *arr, int low, int high, int key)
 
 	if(low > high)
 	{
-	return - 1;
+	return -1;
 	}
 	ind = (low + high) / 2;
 
