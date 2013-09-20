@@ -318,10 +318,6 @@ void oddnevenhelp(int * part, int ind, int left)
     {
       part[ind] = val;
 
-      /* if(ind == 0)
-	{
-	  oddnevenhelp(part, 1, left - val);
-	  }*/
       if(part[0] % 2 != 0)
 	{
 	   if((part[ind] % 2 != 0 && part[ind - 1] % 2 == 0))
@@ -364,7 +360,7 @@ void partitionPrime(int value)
 void primehelp(int * part, int ind, int left)
 {
   int val;
-  int test = 0;
+  int test;
 
   if(left == 0)
     {
@@ -372,24 +368,28 @@ void primehelp(int * part, int ind, int left)
       return;
     }
 
-  test = primetest(left);
-
   for(val = 2; val <= left; val++)
     {
       part[ind] = val;
 
       //printf("Prime? %d\n\n", test);
+      test = primetest(val);
 
       if(test != 0)
 	{
 	  primehelp(part, ind + 1, left - val);
 	}
-      else{return;}
     }
 
 }
 int primetest(int value)
 {
+
+  if(value == 2 || value == 3)
+    {
+      return 1;
+    }
+
   if(value % 2 == 0)
     {
       return 0;
@@ -398,11 +398,11 @@ int primetest(int value)
   int i;
   int max;
 
-  //max = floor(sqrt(value));
+  max = floor(sqrt(value));
 
-  for(i = 2; i < value; i++)
+  for(i = 3; i <= max; i+=2)
     {
-      if(value % ((2 * i) + 1) == 0)
+      if(value % i == 0)
 	{
 	  return 0;
 	}
