@@ -318,16 +318,21 @@ void oddnevenhelp(int * part, int ind, int left)
     {
       part[ind] = val;
 
-      if(part[ind] % 2 != 0 && part[ind + 1] % 2 == 0)
+      /* if(ind == 0)
 	{
-	  oddnevenhelp(part, ind + 1, left - val);
-	}
-      /*else
-	{
-	  left = 0;
-	  printPart(part, ind);
+	  oddnevenhelp(part, 1, left - val);
 	  }*/
-
+      if(part[0] % 2 != 0)
+	{
+	   if((part[ind] % 2 != 0 && part[ind - 1] % 2 == 0))
+	    {
+	      oddnevenhelp(part, ind + 1, left - val);
+	    }
+	   else if((part[ind] % 2 == 0 && part[ind - 1] % 2 != 0))
+	    { 
+	      oddnevenhelp(part, ind + 1, left - val);
+	    }
+	}
     }
 }
 /*
