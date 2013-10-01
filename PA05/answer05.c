@@ -2,7 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include "pa05.h"
-#define MAXIMUM_LENGTH 80
+
+//#define MAXIMUM_LENGTH 80
+
+int comp(const void * , const void * );
+int compstr(const void *, const void *);
 
 /*
  * Read a file of integers.
@@ -12,6 +16,8 @@
  * filename: the name of a file that contains a list of integers (one
  * per line)
  * 
+
+
  * numInteger: pointer to store the number of integers in the
  * file. You need to update the value stored at the address which is
  * the pointer's value.  If the function fails to update the value, it
@@ -67,7 +73,7 @@ int * readInteger(char * filename, int * numInteger)
 	int* arr;
 	int numberofshift = 0;
 	int ind = 0;
-	int temp = 0;
+	int temp;
 
 	fptr=fopen(filename, "r");
 
@@ -76,17 +82,16 @@ int * readInteger(char * filename, int * numInteger)
 		numberofshift++;
 	}
 
+	*numInteger = numberofshift; 
+
 	fseek(fptr, 0, SEEK_SET);
 
 	arr = malloc(numberofshift * sizeof(int));
 
-	while(fscanf(fptr, "%d", &temp) == 1)
+        for(ind = 0; ind < numberofshift; ind++)
 	{
-	arr[ind] = temp;
-	ind++;
+	  fscanf(fptr, "%d", &arr[ind]);
 	}
-
-	*numInteger = numberofshift;
 
 	fclose(fptr);
 
@@ -195,7 +200,7 @@ char * * readString(char * filename, int * numString)
 	  {
 	    arr[i] = malloc(sizeof(char) * (1 + strlen(buffer)));
 	    strcpy(arr[i], buffer);
-	    i = i + 1;
+	    i++;
 	  }
 
 	      //*numString = numberofshift;
@@ -258,6 +263,7 @@ void freeString(char * * arrString, int numString)
     {
       free(arrString[ct]);
     }
+
   free(arrString);
 
 }
@@ -297,13 +303,13 @@ int saveInteger(char * filename, int * arrInteger, int numInteger)
 
       for(ct = 0; ct < numInteger; ct++)
 	{
-	  fprintf(fptr, "%d", arrInteger[ct]);
+	  fprintf(fptr, "%d\n", arrInteger[ct]);
 	}
 
       return 1;
     }
 
-  return flag;
+  // return flag;
 }
 
 /* ----------------------------------------------- */
@@ -335,18 +341,18 @@ int saveString(char * filename, char * * arrString, int numString)
 
   for(ct = 0; ct < numString; ct++)
     {
-      fprintf(fptr, "%d", arrInteger[ct]);
+      // fprintf(fptr, "%d", arrString[ct]);
 
       if(fptr == NULL)
 	{
 	  return 0;
 	}
 
-      length = strlen(arrString[i]);
+      length = strlen(arrString[ct]);
 
-      if(arrString[i][len] != '\n')
+      if(arrString[ct][length] != '\n')
 	{
-	  fprintf(fptr, "%s\n", arrString[i]);
+	  fprintf(fptr, "%s\n", arrString[ct]);
 	}
     }
 
@@ -391,5 +397,5 @@ int compstr(const void *a, const void *b)
 
 int comp(const void * a, const void * b)
 {
-  return( *(int*)a, - *(int*)b);
+  return( *(int*)a - *(int*)b);
 }
