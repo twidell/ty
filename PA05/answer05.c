@@ -194,11 +194,11 @@ char * * readString(char * filename, int * numString)
 
 	fseek(fptr, 0, SEEK_SET);
 
-        arr = malloc(n * sizeof(char*));
+        arr = malloc((n + 1) * sizeof(char*));
 
         while(fgets(buffer, MAXIMUM_LENGTH, fptr) != NULL)
 	  {
-	    arr[i] = malloc(sizeof(char) * (1 + strlen(buffer)));
+	    arr[i] = malloc(sizeof(char) * (strlen(buffer) + 1));
 	    strcpy(arr[i], buffer);
 	    i++;
 	  }
