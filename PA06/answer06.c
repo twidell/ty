@@ -325,14 +325,12 @@ void freeImage(struct Image * image)
  */
 void linearNormalization(struct Image * image)
 {
-
-  struct ImageHeader header;
   int max = image->data[0];
   int min = image->data[0];
   int i;
  // int * pixel = {0};
 
-   for(i = 0; i < header.width * header.height; i++)
+   for(i = 0; i < image->width * image->height; i++)
      {
        if(image->data[i] > max)
 	 {
@@ -344,7 +342,7 @@ void linearNormalization(struct Image * image)
 	 }
      }
 	 
-  for(i = 0; i < header.width * header.height; i++)
+  for(i = 0; i < image->width * image->height; i++)
     {	
       image->data[i] = (image->data[i]- min) * 255.0 / (max - min);
     }
