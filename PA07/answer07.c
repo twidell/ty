@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-Node * List_mergehelp(Node * , Node * );
+Node * List_mergehelp(Node * , Node *);
 Node * ListNode_search(Node * , int);
 
 /**
@@ -133,28 +133,29 @@ Node * List_build(int * value, int * index, int length)
  */
 Node * List_insert_ascend(Node * head, int value, int index)
 {
-  if(value == 0)
+   if(value == 0)
     {
       return head;
     }
   if(head == NULL)
     {
-      return List_create(index, value);//creates index if NULL found
+      return List_create(value, index);//creates index if NULL found
     }
   if(index == (head -> index))//returns value into existing index
     {
-      head -> value = value;
+      head -> value += value;
       return head;
     }
 
-  if(head -> next == NULL)
+  if(head -> index > index)
     {
-      head -> next = List_create(index, value);
+      Node * ting = List_create(value, index);
+      ting -> next = head;
+      return ting;
     }
-  else
-    {
-      head -> next = List_insert_ascend(head -> next, index, value);
-    }
+ 
+      head -> next = List_insert_ascend(head -> next, value, index);
+
 
   return head;
 }
@@ -176,7 +177,19 @@ Node * List_delete(Node * head, int index)
     {
       return NULL;
     }
-  if(head -> index != index)
+
+  Node * delete;
+
+  if(delete -> index == index)
+    {
+      free(delete);
+      return head -> next;
+    }
+
+  head -> next = List_delete(head -> next, index);
+
+  //return head;
+  /* if(head -> index != index)
     {
       head -> next = List_delete(head -> next, index);
     }
@@ -185,6 +198,13 @@ Node * List_delete(Node * head, int index)
       free(head);
       return head;
     }
+
+  if(head -> next == NULL)
+    {
+      Node * nc = head -> next;
+      free(head);
+      return nc;
+      }
 
   Node * scsr = head -> next;
 
@@ -198,7 +218,7 @@ Node * List_delete(Node * head, int index)
   head -> value = scsr -> value;
   head -> next = List_delete(head -> next, index);
 
-  return head;
+  return head;*/
 }
 
 /**
@@ -227,9 +247,16 @@ Node * List_copy(Node * head)
 
   Node * copy = NULL;
 
-  copy = List_insert_ascend(copy, head -> value, head -> index);
+  while(head != NULL)
+    {
+      copy = List_insert_ascend(copy, head -> value, head -> index);
+      head = head -> next;
+    }
 
-  copy -> next = List_copy(head -> next);
+
+  // copy = List_insert_ascend(copy, head -> value, head -> index);
+
+  //copy -> next = List_copy(head -> next);
 
     return copy;
 }
@@ -275,21 +302,25 @@ Node * ListNode_search(Node * fr, int va)
  */
 Node * List_merge(Node * head1, Node * head2)
 {
-  Node * mergeNode;
+  Node * mergeNode = List_copy(head1);
 
-  if(head1 == NULL)
+  while(head2 != NULL)
     {
-      return head2;
+      mergeNode = List_insert_ascend(mergeNode, head2 -> value, head2 -> index);
+
+      if(mergeNode -> value == 0)
+	{
+	  mergeNode = List_delete(mergeNode, mergeNode -> next);
+	}
+
+      head2 = head2 -> next;
     }
 
-  mergeNode = List_copy(head1);
-
-  mergeNode = List_mergehelp(mergeNode, head2);
-
   return mergeNode;
+
 }
 
-Node * List_mergehelp(Node * mergeNode, Node * head2)
+/*Node * List_mergehelp(Node * mergeNode, Node * head2)
 {
   if(head2 == NULL)
     {
@@ -303,7 +334,7 @@ Node * List_mergehelp(Node * mergeNode, Node * head2)
 
   if(getNode == NULL)
     {
-      mergeNode = List_insert_ascend(mergeNode, head2 -> value, head2 -> index);
+      mergeNode = List_insert_ascend(mergeNode, tempNode -> value, tempNode -> index);
     }
   else
     {
@@ -316,4 +347,4 @@ Node * List_mergehelp(Node * mergeNode, Node * head2)
     }
 
   return mergeNode;
-}
+  }*/
